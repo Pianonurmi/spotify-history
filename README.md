@@ -63,3 +63,86 @@ def fetch_recently_played():
     except requests.RequestException as e:
         logging.error(f"Error fetching recently played tracks: {e}")
         return []
+
+# Spotify Fetcher Deployment
+
+This guide explains how to deploy the Spotify Fetcher service using Docker and Docker Compose. The setup uses a prebuilt Docker image hosted on Docker Hub.
+
+---
+
+## Prerequisites
+
+1. Install Docker and Docker Compose:
+   - [Docker Installation Guide](https://docs.docker.com/get-docker/)
+   - [Docker Compose Installation Guide](https://docs.docker.com/compose/install/)
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/Pianonurmi/spotify-history/docker-compose.git
+   cd docker-compose
+Create a .env file in the home-repo directory to store environment variables. Example:
+env
+Kopioi koodi
+POSTGRES_USER=your_postgres_username
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=spotify_db
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+Steps to Deploy
+1. Set Up the Environment
+Ensure the .env file is properly configured with your values. These variables are used for both the PostgreSQL database and the Spotify Fetcher service.
+
+2. Start the Services
+Run the following command to deploy the services using Docker Compose:
+
+bash
+Kopioi koodi
+docker-compose up -d
+3. Verify the Deployment
+PostgreSQL:
+Accessible on port 5432 on localhost.
+Credentials: Use the values from your .env file.
+Spotify Fetcher:
+Accessible on port 8888 on localhost.
+Logs can be viewed with:
+bash
+Kopioi koodi
+docker logs spotify_fetcher
+Folder Structure
+graphql
+Kopioi koodi
+docker-compose/
+├── docker-compose.yml       # Docker Compose file for service configuration
+├── data/                    # Directory for PostgreSQL data persistence
+├── init/                    # Directory for PostgreSQL initialization scripts
+│   └── init.sql             # Initial database schema setup
+├── fetcher/                 # Directory for storing Spotify tokens
+└── .env                     # Environment variables for configuration
+Notes
+If you encounter any issues, check the logs for more details:
+bash
+Kopioi koodi
+docker-compose logs
+Make sure the SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, and SPOTIFY_REDIRECT_URI values match your Spotify Developer Application settings.
+Stopping the Services
+To stop and remove all containers:
+
+bash
+Kopioi koodi
+docker-compose down
+Clean-Up
+To remove all volumes and data:
+
+bash
+Kopioi koodi
+docker-compose down --volumes
+Contributions
+Feel free to fork this repository and submit pull requests to improve the service.
+
+License
+This project is licensed under MIT License.
+
+vbnet
+Kopioi koodi
+
+This `README.md` provides clear instructions for deployment and troubleshooting, tailored for GitHub. 
