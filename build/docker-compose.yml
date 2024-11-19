@@ -1,0 +1,46 @@
+# This is for docker compose BUILD
+
+version: '3.9'
+services:
+  postgresql:
+    image: postgres:15
+    container_name: spotify_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - spotify_network
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  fetcher:
+    build: ./fetcher
+    container_name: spotify_fetcher
+    ports:
+      - "8888:8888"
+    networks:
+      - spotify_network
+    environment:
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+      SPOTIFY_REDIRECT_URI: ${SPOTIFY_REDIRECT_URI}
+      POSTGRES_HOST: postgresql
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      LOG_LEVEL: DEBUG
+    volumes:
+
+      - ./fetcher:/app/spotify_tokens
+    depends_on:
+      - postgresql
+    restart: always
+networks:
+  spotify_network:
+    driver: bridge
+volumes:
+  postgres_data:
