@@ -18,32 +18,6 @@ This project fetches your recently played Spotify tracks and stores them in a Po
    - The `refresh_token()` function checks for the `refresh_token` inside the `spotify_tokens.json` file. If the `refresh_token` is available, it sends a request to Spotify’s API (`/api/token`) to get a new access token using the refresh token.
    - If the refresh is successful, it updates the tokens in the `spotify_tokens.json` file.
 
-   **refresh_token() function:**
-   ```python
-   def refresh_token():
-       logging.info("Refreshing Spotify access token.")
-       try:
-           with open(TOKENS_FILE, "r") as file:
-               tokens = json.load(file)
-           refresh_response = requests.post(
-               "https://accounts.spotify.com/api/token",
-               data={
-                   "grant_type": "refresh_token",
-                   "refresh_token": tokens["refresh_token"],
-                   "client_id": CLIENT_ID,
-                   "client_secret": CLIENT_SECRET,
-               },
-           )
-           refresh_response.raise_for_status()
-           new_tokens = refresh_response.json()
-           tokens.update(new_tokens)
-           with open(TOKENS_FILE, "w") as file:
-               json.dump(tokens, file)
-           logging.info("Token refresh successful.")
-           return tokens["access_token"]
-       except (requests.RequestException, KeyError, json.JSONDecodeError) as e:
-           logging.error(f"Error refreshing token: {e}")
-           raise
 3. **Recently Played Tracks:**
 
 The function fetch_recently_played() calls refresh_token() to ensure the app always has a valid access token before attempting to fetch the data from Spotify. If the access token has expired, it will be refreshed automatically before making the request.
