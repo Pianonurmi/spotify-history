@@ -135,6 +135,7 @@ def save_to_db(data):
         return
     
     cursor = connection.cursor()
+
     for item in data:
         track = item["track"]
         played_at = item["played_at"]
@@ -144,18 +145,20 @@ def save_to_db(data):
         
         logging.debug(f"Processing track: {track_name} by {artist_name}, played at {played_at}")
         
-        # Check if the track already exists in the database
-        cursor.execute(
-            "SELECT 1 FROM spotify_history WHERE track_id = %s", (track_id,)
-        )
-        if cursor.fetchone() is None:
+        # Use a try-except block to handle unique constraint violations gracefully
+        try:
             cursor.execute(
                 "INSERT INTO spotify_history (track_id, track_name, artist_name, played_at) VALUES (%s, %s, %s, %s)",
                 (track_id, track_name, artist_name, played_at),
             )
             connection.commit()
-            logging.info(f"Inserted track: {track_name} by {artist_name}")
+            logging.info(f"Inserted track: {track_name} by {artist_name}, played at {played_at}")
+        except psycopg2.IntegrityError:
+            connection.rollback()  # Roll back if a duplicate is found
+            logging.debug(f"Duplicate entry for track: {track_name} by {artist_name}, played at {played_at}")
+
     connection.close()
+
 
 if __name__ == "__main__":
     if not os.path.exists(TOKENS_FILE):
