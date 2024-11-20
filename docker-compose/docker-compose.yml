@@ -16,7 +16,7 @@ services:
       - "5432:5432"
 
   fetcher:
-    image: pianonurmi/spotify-history:v1
+    image: pianonurmi/spotify-history:v1.01
     container_name: spotify_fetcher
     ports:
       - "8888:8888"
