@@ -14,6 +14,7 @@ services:
       - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    restart: always
 
   fetcher:
     image: pianonurmi/spotify-history:v1.01
@@ -40,5 +41,4 @@ services:
 networks:
   spotify_network:
     driver: bridge
-volumes:
-  postgres_data:
+
